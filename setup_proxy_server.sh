@@ -5,11 +5,11 @@ if ! command -v dart &> /dev/null
 then
     echo "Dart SDK не найден. Установка..."
     sudo apt update
-    sudo apt install apt-transport-https
-    sudo sh -c 'wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -'
-    sudo sh -c 'wget -qO- https://storage.googleapis.com/download.dartlang.org/linux/debian/dart_stable.list > /etc/apt/sources.list.d/dart_stable.list'
+    sudo apt install -y apt-transport-https
+    sudo wget -qO- https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+    sudo sh -c 'echo "deb [signed-by=/usr/share/keyrings/dart-archive-keyring.gpg] https://storage.googleapis.com/download.dartlang.org/linux/debian stable main" > /etc/apt/sources.list.d/dart_stable.list'
     sudo apt update
-    sudo apt install dart
+    sudo apt install -y dart
 else
     echo "Dart SDK уже установлен."
 fi
@@ -19,7 +19,7 @@ PROJECT_DIR="/opt/proxy_server"
 if [ ! -d "$PROJECT_DIR" ]; then
     dart create $PROJECT_DIR
 fi
-cd $PROJECT_DIR
+cd $PROJECT_DIR || exit
 
 # Обновление pubspec.yaml для добавления зависимостей
 cat <<EOF > pubspec.yaml
