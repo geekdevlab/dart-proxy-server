@@ -9,6 +9,7 @@ error_exit() {
 }
 
 PROJECT_DIR="/opt/proxy_server"
+FLUTTER_DIR="$HOME/flutter"
 
 # Создание сервисного файла systemd
 cat <<EOF | sudo tee /etc/systemd/system/proxy_server.service
@@ -21,6 +22,7 @@ User=$USER
 Group=$(id -gn $USER)
 WorkingDirectory=$PROJECT_DIR
 ExecStart=$PROJECT_DIR/start_server.sh
+Environment="PATH=$FLUTTER_DIR/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 Restart=always
 
 [Install]

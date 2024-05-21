@@ -25,9 +25,7 @@ SCRIPTS=(
 for script in "${SCRIPTS[@]}"; do
     download_script $script
     ./$(basename $script)
+    rm -f $(basename $script) # Удаление скрипта после выполнения
 done
 
-# Удаление загруженных скриптов
-for script in "${SCRIPTS[@]}"; do
-    rm -f $(basename $script)
-done
+echo "Все скрипты выполнены и удалены."
