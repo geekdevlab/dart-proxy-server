@@ -51,10 +51,11 @@ else
     fi
 
     echo "Распаковка Flutter SDK..."
-    tar xf flutter.tar.xz || error_exit "Ошибка при распаковке Flutter SDK. Проверьте, что файл flutter.tar.xz не поврежден."
+    mkdir -p flutter_temp
+    tar -xf flutter.tar.xz -C flutter_temp || error_exit "Ошибка при распаковке Flutter SDK. Проверьте, что файл flutter.tar.xz не поврежден."
     
-    mv flutter $FLUTTER_DIR
-    rm flutter.tar.xz
+    mv flutter_temp/flutter $FLUTTER_DIR
+    rm -rf flutter_temp flutter.tar.xz
 fi
 
 # Добавление Flutter в PATH для разных оболочек
