@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Удаление всех файлов с предыдущей установки
+PROJECT_DIR="/opt/proxy_server"
+SERVICE_FILE="/etc/systemd/system/proxy_server.service"
+
+if [ -d "$PROJECT_DIR" ]; then
+    echo "Удаление предыдущей установки..."
+    sudo systemctl stop proxy_server.service
+    sudo systemctl disable proxy_server.service
+    sudo rm -rf "$PROJECT_DIR"
+    sudo rm -f "$SERVICE_FILE"
+    sudo systemctl daemon-reload
+fi
+
 # Установка Dart SDK
 if ! command -v dart &> /dev/null
 then
@@ -15,10 +28,7 @@ else
 fi
 
 # Создание нового Dart проекта
-PROJECT_DIR="/opt/proxy_server"
-if [ ! -d "$PROJECT_DIR" ]; then
-    dart create $PROJECT_DIR
-fi
+dart create $PROJECT_DIR
 cd $PROJECT_DIR || exit
 
 # Обновление pubspec.yaml для добавления зависимостей
