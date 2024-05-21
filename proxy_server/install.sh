@@ -12,10 +12,10 @@ download_script() {
 }
 
 # URL скриптов
-BASE_URL="https://github.com/geekdevlab/public-tools/main"
+BASE_URL="https://raw.githubusercontent.com/geekdevlab/public-tools/main"
 
 SCRIPTS=(
-    "$BASE_URL/proxy_server/cleanup_previous_installation.sh"
+    "$BASE_URL/proxy_server/cleanup.sh"
     "$BASE_URL/tools/install_flutter_linux.sh"
     "$BASE_URL/proxy_server/setup_server.sh"
     "$BASE_URL/proxy_server/setup_service.sh"
