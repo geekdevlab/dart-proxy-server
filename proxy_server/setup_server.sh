@@ -12,6 +12,9 @@ error_exit() {
 
 PROJECT_DIR="/opt/proxy_server"
 
+# Установка PATH для текущей сессии
+export PATH="$PATH:$HOME/flutter/bin"
+
 # Создание нового Dart проекта
 sudo mkdir -p $PROJECT_DIR
 sudo chown $USER:$USER $PROJECT_DIR
