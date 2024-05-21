@@ -88,7 +88,6 @@ flutter doctor || error_exit "Ошибка при запуске 'flutter doctor
 echo "Установка Flutter завершена. Пожалуйста, перезапустите терминал или выполните 'source $SHELL_PROFILE' для обновления PATH."
 
 # Создание нового Dart проекта
-PROJECT_DIR="/opt/proxy_server"
 sudo mkdir -p $PROJECT_DIR
 sudo chown $USER:$USER $PROJECT_DIR
 
