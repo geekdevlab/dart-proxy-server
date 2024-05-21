@@ -14,8 +14,8 @@ SERVICE_FILE="/etc/systemd/system/proxy_server.service"
 
 if [ -d "$PROJECT_DIR" ]; then
     echo "Удаление предыдущей установки..."
-    sudo systemctl stop proxy_server.service
-    sudo systemctl disable proxy_server.service
+    sudo systemctl stop proxy_server.service || true
+    sudo systemctl disable proxy_server.service || true
     sudo rm -rf "$PROJECT_DIR"
     sudo rm -f "$SERVICE_FILE"
     sudo systemctl daemon-reload
@@ -75,6 +75,7 @@ if grep -q "$FLUTTER_DIR/bin" "$SHELL_PROFILE"; then
 else
     echo "Добавление Flutter в PATH..."
     echo "export PATH=\"\$PATH:$FLUTTER_DIR/bin\"" >> $SHELL_PROFILE
+    source $SHELL_PROFILE
 fi
 
 # Установка PATH для текущей сессии
