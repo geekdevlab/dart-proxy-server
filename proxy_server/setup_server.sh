@@ -1,5 +1,3 @@
-
-
 #!/bin/bash
 
 set -e
@@ -10,91 +8,33 @@ error_exit() {
     exit 1
 }
 
+# URL репозитория с файлом server.dart
+REPO_URL="https://raw.githubusercontent.com/geekdevlab/public-tools/main/proxy_server/app"
+
 PROJECT_DIR="/opt/proxy_server"
 
-# Установка PATH для текущей сессии
-export PATH="$PATH:$HOME/flutter/bin"
+# Удаление предыдущей установки, если она существует
+if [ -d "$PROJECT_DIR" ]; then
+    sudo rm -rf "$PROJECT_DIR"
+fi
 
-# Создание нового Dart проекта
+# Создание нового проекта
 sudo mkdir -p $PROJECT_DIR
 sudo chown $USER:$USER $PROJECT_DIR
 
 cd $PROJECT_DIR || exit
 
-# Инициализация нового проекта Dart
-flutter create --template=package .
-dart pub get
-
-# Обновление pubspec.yaml для добавления зависимостей
-cat <<EOF > pubspec.yaml
-name: proxy_server
-description: A simple proxy server to OpenAI API.
-version: 1.0.0
-
-environment:
-  sdk: '>=2.12.0 <3.0.0'
-
-dependencies:
-  shelf: ^1.2.0
-  http: ^0.13.4
-
-dev_dependencies:
-  lints: ^1.0.0
-  test: ^1.16.0
-EOF
+# Загрузка pubspec.yaml
+echo "Скачивание pubspec.yaml ..."
+curl -L -o pubspec.yaml "$REPO_URL/pubspec.yaml"
 
 # Установка зависимостей
 dart pub get
 
-# Создание серверного файла
+# Создание директории для сервера и загрузка server.dart
 mkdir -p bin
-cat <<EOF > bin/server.dart
-import 'dart:io';
-import 'dart:convert';
-import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart' as io;
-import 'package:http/http.dart' as http;
-import 'package:shelf_router/shelf_router.dart';
-
-Future<Response> proxyOpenAI(Request request) async {
-  final apiKey = request.headers['Authorization'];
-  if (apiKey == null) {
-    return Response(400, body: jsonEncode({'error': 'Authorization header is required'}), headers: {
-      'Content-Type': 'application/json',
-    });
-  }
-
-  final payload = await request.readAsString();
-  final openaiUrl = 'https://api.openai.com/v1/engines/davinci-codex/completions';
-
-  final openaiResponse = await http.post(
-    Uri.parse(openaiUrl),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': apiKey,
-    },
-    body: payload,
-  );
-
-  return Response(
-    openaiResponse.statusCode,
-    body: openaiResponse.body,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  );
-}
-
-void main() async {
-  final router = Router();
-  router.post('/proxy_openai', proxyOpenAI);
-
-  final handler = const Pipeline().addMiddleware(logRequests()).addHandler(router);
-
-  final server = await io.serve(handler, '0.0.0.0', 8000);
-  print('Server listening on port \${server.port}');
-}
-EOF
+echo "Скачивание server.dart ..."
+curl -L -o bin/server.dart "$REPO_URL/bin/server.dart"
 
 # Создание файла для запуска сервера
 cat <<EOF > start_server.sh
