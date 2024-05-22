@@ -8,11 +8,9 @@ import 'package:shelf_router/shelf_router.dart';
 Future<Response> proxyRequest(Request request) async {
   final apiKey = request.headers['Authorization'];
   if (apiKey == null) {
-    return Response(400,
-        body: jsonEncode({'error': 'Authorization header is required'}),
-        headers: {
-          'Content-Type': 'application/json',
-        });
+    return Response(400, body: jsonEncode({'error': 'Authorization header is required'}), headers: {
+      'Content-Type': 'application/json',
+    });
   }
 
   final payload = await request.readAsString();
@@ -46,11 +44,10 @@ Future<Response> healthCheck(Request request) async {
 void main() async {
   final router = Router();
 
-  router.all('/<path|.*>', proxyRequest);
   router.get('/healthcheck', healthCheck);
+  router.all('/<path|.*>', proxyRequest);
 
-  final handler =
-      const Pipeline().addMiddleware(logRequests()).addHandler(router);
+  final handler = const Pipeline().addMiddleware(logRequests()).addHandler(router);
 
   final server = await io.serve(handler, '0.0.0.0', 8000);
   print('Server listening on port ${server.port}');
