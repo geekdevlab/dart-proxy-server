@@ -17,12 +17,12 @@ PROJECT_DIR="/opt/proxy_server"
 TEMP_DIR="/tmp/proxy_server"
 
 # Удаление предыдущей установки, если она существует
-if [ -d "$PROJECT_DIR" ];then
+if [ -d "$PROJECT_DIR" ]; then
     sudo rm -rf "$PROJECT_DIR"
 fi
 
 # Удаление временной директории, если она существует
-if [ -d "$TEMP_DIR" ];then
+if [ -d "$TEMP_DIR" ]; then
     rm -rf "$TEMP_DIR"
 fi
 
@@ -40,6 +40,14 @@ git sparse-checkout set $TARGET_DIR || error_exit "Не удалось наст�
 sudo mkdir -p $PROJECT_DIR
 sudo mv $TEMP_DIR/$TARGET_DIR/* $PROJECT_DIR || error_exit "Не удалось переместить файлы проекта"
 sudo chown -R $USER:$USER $PROJECT_DIR
+
+# Проверка наличия необходимых файлов
+if [ ! -f "$PROJECT_DIR/bin/server.dart" ]; then
+    error_exit "Файл bin/server.dart не найден"
+fi
+if [ ! -f "$PROJECT_DIR/pubspec.yaml" ]; then
+    error_exit "Файл pubspec.yaml не найден"
+fi
 
 # Установка зависимостей
 cd $PROJECT_DIR || exit
