@@ -21,9 +21,9 @@ install_dependencies() {
     echo "Обновление пакетов и установка необходимых зависимостей..."
     if command -v apt-get > /dev/null; then
         sudo apt-get update || error_exit "Не удалось выполнить обновление пакетов."
-        sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa nginx certbot python3-certbot-nginx || error_exit "Не удалось установить необходимые зависимости."
+        sudo apt-get install -y curl git unzip xz-utils zip libglu1-mesa nginx certbot python3-certbot-nginx netcat || error_exit "Не удалось установить необходимые зависимости."
     elif command -v yum > /dev/null; then
-        sudo yum install -y curl git unzip xz-utils zip mesa-libGLU nginx certbot python3-certbot-nginx || error_exit "Не удалось установить необходимые зависимости."
+        sudo yum install -y curl git unzip xz-utils zip mesa-libGLU nginx certbot python3-certbot-nginx nmap-ncat || error_exit "Не удалось установить необходимые зависимости."
     else
         error_exit "Не удалось определить менеджер пакетов. Скрипт поддерживает только apt-get и yum."
     fi
@@ -67,6 +67,11 @@ check_server() {
     echo "HTTP статус: $HTTP_STATUS"
     if [ "$HTTP_STATUS" -ne 301 ]; then
         error_exit "Сервер не отвечает на запрос healthcheck через HTTP"
+    fi
+    
+    echo "Проверка доступности порта 443..."
+    if ! nc -zv $DOMAIN 443; then
+        error_exit "Порт 443 недоступен"
     fi
     
     echo "Проверка HTTPS-запроса..."
