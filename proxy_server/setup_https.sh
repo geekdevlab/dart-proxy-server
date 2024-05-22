@@ -50,8 +50,18 @@ setup_https() {
 
 # Проверка состояния сервера
 check_server() {
-    curl -I http://proxy.gdlabenv.com/healthcheck || error_exit "Сервер не отвечает на запрос healthcheck"
-    curl -I https://proxy.gdlabenv.com/healthcheck || error_exit "HTTPS сервер не отвечает на запрос healthcheck"
+    # Проверка HTTP-запроса
+    HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" http://proxy.gdlabenv.com/healthcheck)
+    if [ "$HTTP_STATUS" -ne 301 ]; then
+        error_exit "Сервер не отвечает на запрос healthcheck через HTTP"
+    fi
+    
+    # Проверка HTTPS-запроса
+    HTTPS_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" https://proxy.gdlabenv.com/healthcheck)
+    if [ "$HTTPS_STATUS" -ne 200 ]; then
+        error_exit "HTTPS сервер не отвечает на запрос healthcheck"
+    fi
+
     echo "Сервер успешно запущен и работает с HTTPS."
 }
 
