@@ -10,6 +10,7 @@ error_exit() {
 
 # URL репозитория и ветка
 REPO_URL="https://github.com/geekdevlab/public-tools.git"
+REPO_BRANCH="main"
 TARGET_DIR="proxy_server/app"
 
 PROJECT_DIR="/opt/proxy_server"
@@ -28,9 +29,12 @@ fi
 # Создание временной директории
 mkdir -p $TEMP_DIR
 
-# Скачивание и извлечение нужной папки из репозитория
-echo "Скачивание и извлечение папки $TARGET_DIR из репозитория ..."
-git archive --remote=$REPO_URL HEAD $TARGET_DIR | tar -x -C $TEMP_DIR || error_exit "Не удалось скачать или распаковать архив проекта"
+# Клонирование репозитория с использованием sparse-checkout для загрузки только нужной папки
+echo "Клонирование репозитория и загрузка папки $TARGET_DIR ..."
+git clone --depth 1 --branch $REPO_BRANCH --filter=blob:none --sparse $REPO_URL $TEMP_DIR || error_exit "Не удалось клонировать репозиторий"
+cd $TEMP_DIR
+git sparse-checkout init --cone
+git sparse-checkout set $TARGET_DIR || error_exit "Не удалось настроить sparse-checkout"
 
 # Перемещение файлов проекта в целевую директорию
 sudo mkdir -p $PROJECT_DIR
