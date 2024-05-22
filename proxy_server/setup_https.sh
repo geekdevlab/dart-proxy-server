@@ -70,9 +70,9 @@ check_server() {
     fi
     
     echo "Проверка HTTPS-запроса..."
-    HTTPS_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" https://$DOMAIN/healthcheck)
+    HTTPS_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" --max-time 10 https://$DOMAIN/healthcheck)
     echo "HTTPS статус: $HTTPS_STATUS"
-    if [ "$HTTPS_STATUS" -ne 200 ];then
+    if [ "$HTTPS_STATUS" -ne 200 ]; then
         error_exit "HTTPS сервер не отвечает на запрос healthcheck"
     fi
 
