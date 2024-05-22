@@ -19,6 +19,7 @@ SCRIPTS=(
     "$BASE_URL/tools/install_flutter_linux.sh"
     "$BASE_URL/proxy_server/setup_server.sh"
     "$BASE_URL/proxy_server/setup_service.sh"
+    "$BASE_URL/proxy_server/setup_nginx.sh"
 )
 
 # Загрузка и выполнение скриптов
