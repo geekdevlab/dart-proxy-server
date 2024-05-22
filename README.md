@@ -8,3 +8,6 @@ chmod +x install.sh
 
 Запустите скрипт
 ./install.sh
+
+Проверка сервера
+curl "http://localhost:8000/healthcheck"

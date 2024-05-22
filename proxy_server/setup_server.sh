@@ -8,33 +8,38 @@ error_exit() {
     exit 1
 }
 
-# URL репозитория с файлом server.dart
-REPO_URL="https://raw.githubusercontent.com/geekdevlab/public-tools/main/proxy_server/app"
+# URL архива с проектом
+REPO_URL="https://github.com/geekdevlab/public-tools"
+TARGET_DIR="proxy_server/app"
 
 PROJECT_DIR="/opt/proxy_server"
+TEMP_DIR="/tmp/proxy_server"
 
 # Удаление предыдущей установки, если она существует
 if [ -d "$PROJECT_DIR" ]; then
     sudo rm -rf "$PROJECT_DIR"
 fi
 
-# Создание нового проекта
+# Удаление временной директории, если она существует
+if [ -d "$TEMP_DIR" ]; then
+    rm -rf "$TEMP_DIR"
+fi
+
+# Создание временной директории
+mkdir -p $TEMP_DIR
+
+# Загрузка и распаковка архива с нужной папкой
+echo "Скачивание и распаковка папки $TARGET_DIR из репозитория ..."
+curl -L "$REPO_URL/tarball/main" | tar -xz --strip=1 --wildcards --no-anchored "$TARGET_DIR/*" -C "$TEMP_DIR" || error_exit "Не удалось скачать или распаковать архив проекта"
+
+# Перемещение файлов проекта в целевую директорию
 sudo mkdir -p $PROJECT_DIR
-sudo chown $USER:$USER $PROJECT_DIR
-
-cd $PROJECT_DIR || exit
-
-# Загрузка pubspec.yaml
-echo "Скачивание pubspec.yaml ..."
-curl -L -o pubspec.yaml "$REPO_URL/pubspec.yaml"
+sudo mv $TEMP_DIR/$TARGET_DIR/* $PROJECT_DIR || error_exit "Не удалось переместить файлы проекта"
+sudo chown -R $USER:$USER $PROJECT_DIR
 
 # Установка зависимостей
-dart pub get
-
-# Создание директории для сервера и загрузка server.dart
-mkdir -p bin
-echo "Скачивание server.dart ..."
-curl -L -o bin/server.dart "$REPO_URL/bin/server.dart"
+cd $PROJECT_DIR || exit
+dart pub get || error_exit "Не удалось установить зависимости"
 
 # Создание файла для запуска сервера
 cat <<EOF > start_server.sh
@@ -44,3 +49,20 @@ EOF
 
 # Сделать файл start_server.sh исполняемым
 chmod +x start_server.sh
+
+# Запуск сервера в фоновом режиме
+./start_server.sh &
+
+# Ожидание запуска сервера
+sleep 5
+
+# Проверка состояния сервера
+echo "Проверка состояния сервера..."
+HEALTHCHECK_URL="http://localhost:8000/healthcheck"
+HEALTHCHECK_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" $HEALTHCHECK_URL)
+
+if [ "$HEALTHCHECK_RESPONSE" -eq 200 ]; then
+    echo "Сервер успешно запущен и работает."
+else
+    error_exit "Сервер не отвечает на запрос healthcheck."
+fi
