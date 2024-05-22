@@ -15,7 +15,7 @@ sudo apt-get install -y nginx || error_exit "Не удалось установ�
 
 # Настройка Nginx для проксирования запросов к приложению Dart
 NGINX_CONFIG="/etc/nginx/sites-available/default"
-sudo cat <<EOF > $NGINX_CONFIG
+sudo bash -c "cat > $NGINX_CONFIG" <<EOF
 server {
     listen 80;
     server_name _;
