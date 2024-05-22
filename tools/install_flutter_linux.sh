@@ -21,7 +21,7 @@ fi
 
 # Загрузка последней версии Flutter SDK
 FLUTTER_VERSION="stable"
-FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.22.0-stable.tar.xz"
+FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/$FLUTTER_VERSION/linux/flutter_linux_$FLUTTER_VERSION.tar.xz"
 FLUTTER_DIR="$HOME/flutter"
 
 if [ -d "$FLUTTER_DIR" ]; then

@@ -8,6 +8,9 @@ error_exit() {
     exit 1
 }
 
+# Убедиться, что Flutter и Dart в PATH
+export PATH="$PATH:$HOME/flutter/bin"
+
 # URL репозитория и ветка
 REPO_URL="https://github.com/geekdevlab/public-tools.git"
 REPO_BRANCH="main"
@@ -17,12 +20,12 @@ PROJECT_DIR="/opt/proxy_server"
 TEMP_DIR="/tmp/proxy_server"
 
 # Удаление предыдущей установки, если она существует
-if [ -d "$PROJECT_DIR" ];then
+if [ -d "$PROJECT_DIR" ]; then
     sudo rm -rf "$PROJECT_DIR"
 fi
 
 # Удаление временной директории, если она существует
-if [ -d "$TEMP_DIR" ];then
+if [ -d "$TEMP_DIR" ]; then
     rm -rf "$TEMP_DIR"
 fi
 
@@ -60,6 +63,7 @@ dart pub get || error_exit "Не удалось установить завис�
 # Создание файла для запуска сервера
 cat <<EOF > start_server.sh
 #!/bin/bash
+export PATH="$PATH:$HOME/flutter/bin"
 dart run bin/server.dart
 EOF
 
