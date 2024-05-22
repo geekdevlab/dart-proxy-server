@@ -8,8 +8,8 @@ error_exit() {
     exit 1
 }
 
-# URL архива с проектом
-REPO_URL="https://github.com/geekdevlab/public-tools"
+# URL репозитория и ветка
+REPO_URL="https://github.com/geekdevlab/public-tools.git"
 TARGET_DIR="proxy_server/app"
 
 PROJECT_DIR="/opt/proxy_server"
@@ -28,9 +28,9 @@ fi
 # Создание временной директории
 mkdir -p $TEMP_DIR
 
-# Загрузка и распаковка архива с нужной папкой
-echo "Скачивание и распаковка папки $TARGET_DIR из репозитория ..."
-curl -L "$REPO_URL/tarball/main" | tar -xz --strip=1 --wildcards --no-anchored "$TARGET_DIR/*" -C "$TEMP_DIR" || error_exit "Не удалось скачать или распаковать архив проекта"
+# Скачивание и извлечение нужной папки из репозитория
+echo "Скачивание и извлечение папки $TARGET_DIR из репозитория ..."
+git archive --remote=$REPO_URL HEAD $TARGET_DIR | tar -x -C $TEMP_DIR || error_exit "Не удалось скачать или распаковать архив проекта"
 
 # Перемещение файлов проекта в целевую директорию
 sudo mkdir -p $PROJECT_DIR
