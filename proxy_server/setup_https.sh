@@ -2,6 +2,14 @@
 
 set -e
 
+# Проверка на наличие входного параметра
+if [ -z "$1" ]; then
+    echo "Использование: $0 <домен>"
+    exit 1
+fi
+
+DOMAIN=$1
+
 # Функция для вывода сообщений об ошибке и завершения скрипта
 error_exit() {
     echo "$1" 1>&2
@@ -24,10 +32,11 @@ install_dependencies() {
 # Настройка Nginx для проксирования запросов
 setup_nginx() {
     NGINX_CONFIG="/etc/nginx/sites-available/default"
+    echo "Настройка Nginx..."
     sudo bash -c "cat > $NGINX_CONFIG" <<EOF
 server {
     listen 80;
-    server_name proxy.gdlabenv.com;
+    server_name $DOMAIN;
 
     location / {
         proxy_pass http://localhost:8000;
@@ -39,26 +48,31 @@ server {
 }
 EOF
 
+    echo "Перезапуск Nginx..."
     sudo systemctl restart nginx || error_exit "Не удалось перезапустить Nginx"
 }
 
 # Получение и настройка SSL-сертификата
 setup_https() {
-    sudo certbot --nginx -d proxy.gdlabenv.com || error_exit "Не удалось получить SSL-сертификат"
+    echo "Получение SSL-сертификата от Let's Encrypt..."
+    sudo certbot --nginx -d $DOMAIN || error_exit "Не удалось получить SSL-сертификат"
+    echo "Перезагрузка Nginx..."
     sudo systemctl reload nginx || error_exit "Не удалось перезагрузить Nginx"
 }
 
 # Проверка состояния сервера
 check_server() {
-    # Проверка HTTP-запроса
-    HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" http://proxy.gdlabenv.com/healthcheck)
+    echo "Проверка HTTP-запроса..."
+    HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" http://$DOMAIN/healthcheck)
+    echo "HTTP статус: $HTTP_STATUS"
     if [ "$HTTP_STATUS" -ne 301 ]; then
         error_exit "Сервер не отвечает на запрос healthcheck через HTTP"
     fi
     
-    # Проверка HTTPS-запроса
-    HTTPS_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" https://proxy.gdlabenv.com/healthcheck)
-    if [ "$HTTPS_STATUS" -ne 200 ]; then
+    echo "Проверка HTTPS-запроса..."
+    HTTPS_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" https://$DOMAIN/healthcheck)
+    echo "HTTPS статус: $HTTPS_STATUS"
+    if [ "$HTTPS_STATUS" -ne 200 ];then
         error_exit "HTTPS сервер не отвечает на запрос healthcheck"
     fi
 
