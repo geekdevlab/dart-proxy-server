@@ -20,7 +20,6 @@ SCRIPTS=(
     "$BASE_URL/proxy_server/setup_server.sh"
     "$BASE_URL/proxy_server/setup_service.sh"
     "$BASE_URL/proxy_server/setup_nginx.sh"
-    "$BASE_URL/proxy_server/setup_https.sh"
 )
 
 # Загрузка и выполнение скриптов
