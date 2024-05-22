@@ -17,12 +17,12 @@ PROJECT_DIR="/opt/proxy_server"
 TEMP_DIR="/tmp/proxy_server"
 
 # Удаление предыдущей установки, если она существует
-if [ -d "$PROJECT_DIR" ]; then
+if [ -d "$PROJECT_DIR" ];then
     sudo rm -rf "$PROJECT_DIR"
 fi
 
 # Удаление временной директории, если она существует
-if [ -d "$TEMP_DIR" ]; then
+if [ -d "$TEMP_DIR" ];then
     rm -rf "$TEMP_DIR"
 fi
 
@@ -31,7 +31,7 @@ mkdir -p $TEMP_DIR
 
 # Клонирование репозитория с использованием sparse-checkout для загрузки только нужной папки
 echo "Клонирование репозитория и загрузка папки $TARGET_DIR ..."
-git clone --depth 1 --branch $REPO_BRANCH --filter=blob:none --sparse $REPO_URL $TEMP_DIR || error_exit "Не удалось клонировать репозиторий"
+git clone --depth 1 --branch $REPO_BRANCH --filter=blob:none $REPO_URL $TEMP_DIR || error_exit "Не удалось клонировать репозиторий"
 cd $TEMP_DIR
 git sparse-checkout init --cone
 git sparse-checkout set $TARGET_DIR || error_exit "Не удалось настроить sparse-checkout"
