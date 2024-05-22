@@ -21,7 +21,7 @@ fi
 
 # Загрузка последней версии Flutter SDK
 FLUTTER_VERSION="stable"
-FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/$FLUTTER_VERSION/linux/flutter_linux_$FLUTTER_VERSION.tar.xz"
+FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/$FLUTTER_VERSION/linux/flutter_linux_3.22.0-$FLUTTER_VERSION.tar.xz"
 FLUTTER_DIR="$HOME/flutter"
 
 if [ -d "$FLUTTER_DIR" ]; then
@@ -73,5 +73,8 @@ flutter --version || error_exit "Ошибка при проверке верси
 
 # Запуск flutter doctor для диагностики установки
 flutter doctor || error_exit "Ошибка при запуске 'flutter doctor'. Проверьте, что все зависимости установлены правильно."
+
+# Запуск flutter doctor для диагностики установки
+flutter upgrade || error_exit "Ошибка при запуске 'flutter upgrade'. Проверьте, что все зависимости установлены правильно."
 
 echo "Установка Flutter завершена. Пожалуйста, перезапустите терминал или выполните 'source $SHELL_PROFILE' для обновления PATH."
