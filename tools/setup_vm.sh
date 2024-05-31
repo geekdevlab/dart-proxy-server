@@ -2,19 +2,24 @@
 
 # Обновление списка пакетов и установка необходимых зависимостей
 sudo apt-get update
-sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+sudo apt-get install -y ca-certificates curl
 
-# Добавление официального GPG-ключа Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+# Создание директории для ключей APT и добавление официального GPG-ключа Docker
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
 # Добавление Docker репозитория в список источников APT
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# Обновление списка пакетов еще раз
+# Обновление списка пакетов
 sudo apt-get update
 
-# Установка Docker
-sudo apt-get install -y docker-ce
+# Установка Docker и его компонентов
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Проверка статуса Docker
 sudo systemctl status docker --no-pager
