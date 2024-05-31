@@ -21,6 +21,15 @@ sudo apt-get update
 # Установка Docker и его компонентов
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
+# Настройка Docker для использования зеркала Яндекса
+sudo mkdir -p /etc/docker
+echo '{
+  "registry-mirrors": ["https://mirror.yandex.ru"]
+}' | sudo tee /etc/docker/daemon.json > /dev/null
+
+# Перезапуск Docker для применения новых настроек
+sudo systemctl restart docker
+
 # Проверка статуса Docker
 sudo systemctl status docker --no-pager
 
