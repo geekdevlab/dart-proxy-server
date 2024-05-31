@@ -12,7 +12,7 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 # Добавление Docker репозитория в список источников APT
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  $(. /etc/os-release && echo \"$VERSION_CODENAME\") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Обновление списка пакетов
@@ -24,7 +24,7 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 # Настройка Docker для использования зеркала Яндекса
 sudo mkdir -p /etc/docker
 echo '{
-  "registry-mirrors": ["https://mirror.yandex.ru"]
+  "registry-mirrors": ["https://cr.yandex/mirror"]
 }' | sudo tee /etc/docker/daemon.json > /dev/null
 
 # Перезапуск Docker для применения новых настроек
@@ -37,8 +37,4 @@ sudo systemctl status docker --no-pager
 sudo docker run hello-world
 
 # Проверка, что Docker работает правильно (опционально)
-if sudo docker run hello-world | grep -q "Hello from Docker!"; then
-  echo "Docker установлен и работает правильно."
-else
-  echo "Проблема с установкой Docker."
-fi
+if sudo docker run hello-world​⬤
